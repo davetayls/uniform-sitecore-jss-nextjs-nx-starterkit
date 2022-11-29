@@ -2,10 +2,6 @@
 // Make sure the syntax and sources this file requires are compatible with the current node version you are running
 require('./uniform.config')();
 
-if (!require('fs').existsSync('./scjssconfig.json')) {
-  throw new Error('Cannot find ./scjssconfig.json file. Make sure to run `jss setup` first.');
-}
-
 const { createUniformServer } = require('@uniformdev/next-jss-server');
 const { createPublishProvider } = require('@uniformdev/publishing-all');
 

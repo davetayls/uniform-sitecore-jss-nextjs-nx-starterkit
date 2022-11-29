@@ -2,7 +2,7 @@ import { Link, RichText, Text } from "@sitecore-jss/sitecore-jss-react";
 
 import styles from "./Hero.module.css";
 
-const Hero = ({ fields }) => {
+const Hero = ({ fields }: any) => {
   if (!fields) {
     return null;
   }

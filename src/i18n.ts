@@ -1,4 +1,4 @@
-import i18n from 'i18next';
+import i18n, { InitOptions} from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
 /**
@@ -13,7 +13,7 @@ export function i18init(language, dictionary) {
         return;
     }
 
-    const options = {
+    const options: any = {
         debug: false,
         lng: language,
         fallbackLng: false, // fallback to keys

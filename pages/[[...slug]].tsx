@@ -1,3 +1,4 @@
+import { GetStaticProps, GetStaticPaths } from 'next'
 import Head from 'next/head';
 import MainLayout from '../src/components/MainLayout/MainLayout';
 import {
@@ -6,30 +7,16 @@ import {
     SitecoreContext,
     StaticAssetContextProvider,
 } from '@uniformdev/next-jss';
-import componentFactory from '../src/componentFactory';
-import { useSitecoreTracker } from '@uniformdev/tracking-react';
-import { SitecorePersonalizationContextProvider } from '@uniformdev/personalize-react';
-import { EsiPlaceholder } from '@uniformdev/esi-jss-react';
-import { getBoolEnv } from '@uniformdev/common';
+import { componentFactory } from '../src/componentFactory';
+import * as uniformdev from '@uniformdev/optimize-js';
 
-const esiEnabled = getBoolEnv(process.env, 'UNIFORM_OPTIONS_ESI', false);
+if (typeof window !== 'undefined') {
+    (window as any).uniformdev = uniformdev;
+}
 
 const SitecoreRoute = ({ layoutData, assetPrefix = '' }) => {
     const route = layoutData?.sitecore?.route;
-
-    const sitecoreContext = layoutData?.sitecore?.context;
-    
-    useSitecoreTracker(sitecoreContext, {
-        type: 'jss',
-    });
-
     return (
-        <SitecorePersonalizationContextProvider
-            contextData={sitecoreContext}
-            personalizationMode="jss-esi"
-            sitecoreApiKey="eefe326b-aff1-4154-9ae8-2beb85d4b8cb"
-            sitecoreSiteName="uniform-jss-kit"
-        >
             <StaticAssetContextProvider assetPrefix={assetPrefix}>
                 <Head>
                     <title>{route?.fields?.pageTitle?.value || 'Page'}</title>
@@ -37,22 +24,20 @@ const SitecoreRoute = ({ layoutData, assetPrefix = '' }) => {
                 </Head>
 
                 <SitecoreContext componentFactory={componentFactory} layoutData={layoutData}>
-                    {esiEnabled && <EsiPlaceholder rendering={route} />}
                     <MainLayout route={route} />
                 </SitecoreContext>
             </StaticAssetContextProvider>
-        </SitecorePersonalizationContextProvider>
     );
 };
 
 // Using Automatic Static Optimization
-export async function getStaticPaths() {
+export const getStaticPaths: GetStaticPaths = async () => {
     const { getSitecoreStaticPaths } = await import('@uniformdev/next-jss-server');
-    if (isExportProcess()) {
+    if (process.env.UNIFORM_BUILD_MODE != 'ssr') {
         // If we are exporting the site directly or via a publish
         // specify all static paths and let nextjs handle 404
         return {
-            paths: await getSitecoreStaticPaths(),
+            paths: await getSitecoreStaticPaths({}),
             fallback: false,
         };
     } else {
@@ -67,9 +52,10 @@ export async function getStaticPaths() {
 
 // This getStaticProps can be used alongside a [...slug] or [[...slug]]
 // page within the pages folder.
-export async function getStaticProps({ params, locale, defaultLocale, previewData }) {
+export const getStaticProps: GetStaticProps<any, { slug: string[] }> = async ({ params, locale, defaultLocale, previewData }) => {
     const options = {
-        previewData,
+        previewData: previewData as any,
+        env: {},
         routeParams: {
             sitecoreRoute: '/' + (params?.slug?.join('/') || ''),
             lang: locale ?? defaultLocale ?? 'en',

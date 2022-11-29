@@ -1,7 +1,7 @@
 import i18n from 'i18next';
 import { dataFetcher } from './dataFetcher';
 import { isInitialized } from './i18n';
-import { dictionaryDataPipeline, fetchDictionaryData } from '@uniformdev/next-jss';
+import { DataFetcher, dictionaryDataPipeline, fetchDictionaryData } from '@uniformdev/next-jss';
 import { getNextServerConfig } from '@uniformdev/next';
 
 export async function configureServerDictionaryPipeline(language) {
@@ -26,7 +26,7 @@ async function getDictionaryData(language) {
     const { sitecoreSiteName, sitecoreApiHost, sitecoreApiKey, jssAppName } = getNextServerConfig();
 
     return fetchDictionaryData(language, {
-        dataFetcher: dataFetcher,
+        dataFetcher: dataFetcher as DataFetcher,
         sitecoreSiteName,
         sitecoreApiKey,
         sitecoreApiHost,

@@ -1,7 +1,7 @@
 import { RichText, Text } from "@sitecore-jss/sitecore-jss-react";
 import styles from "./LinkList.module.css";
 
-const LinkList = ({ fields }) => {
+const LinkList = ({ fields }: any) => {
   const { items } = fields || {};
   return (
     <div className={styles.container}>

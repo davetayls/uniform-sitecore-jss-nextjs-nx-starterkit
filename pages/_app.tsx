@@ -6,10 +6,10 @@ import { configureServerDictionaryPipeline } from '../src/configureServerDiction
 
 if (typeof window === 'undefined') {
     require('@uniformdev/next-jss-server').configure();
-    configureServerDictionaryPipeline();
+    configureServerDictionaryPipeline(undefined);
 }
 
-export default class App extends NextApp {
+export default class App extends NextApp<any> {
     render() {
         const { Component, pageProps } = this.props;
         // If i18n is not initialized, then do so.
